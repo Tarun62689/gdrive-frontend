@@ -10,8 +10,14 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ✅ Use CRA env variable (must be defined in .env as REACT_APP_BACKEND_URL)
+  // ✅ Use CRA environment variable
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+  if (!BACKEND_URL) {
+    console.error(
+      "REACT_APP_BACKEND_URL is not defined! Add it to your .env file."
+    );
+  }
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,15 +29,14 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include", // ✅ needed for cookies
+        credentials: "include", // ✅ important for cookies
       });
 
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // ✅ Navigate after successful login
-      navigate("/FileExplorer");
+      navigate("/FileExplorer"); // ✅ go to file explorer on success
     } catch (err) {
       setError(err.message);
     } finally {
@@ -84,7 +89,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !BACKEND_URL}
             className="w-full bg-blue-500 text-white rounded-3xl py-2 hover:bg-blue-600 transition disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Login"}
