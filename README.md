@@ -68,3 +68,39 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+```
+gdrive-frontend
+├─ client
+├─ package.json
+├─ postcss.config.js
+├─ public
+│  ├─ favicon.ico
+│  ├─ index.html
+│  ├─ logo192.png
+│  ├─ manifest.json
+│  └─ robots.txt
+├─ README.md
+├─ src
+│  ├─ App.css
+│  ├─ App.js
+│  ├─ App.test.js
+│  ├─ assets
+│  │  ├─ hero-combined.jpg
+│  │  ├─ hero-video.mp4
+│  │  ├─ logo.png
+│  │  └─ sample.png
+│  ├─ components
+│  │  ├─ FileExplorer.jsx
+│  │  ├─ LandingPage.jsx
+│  │  ├─ LoginPage.jsx
+│  │  └─ SignupPage.jsx
+│  ├─ index.css
+│  ├─ index.js
+│  ├─ logo.svg
+│  ├─ reportWebVitals.js
+│  └─ setupTests.js
+├─ static.json
+└─ tailwind.config.js
+
+```
