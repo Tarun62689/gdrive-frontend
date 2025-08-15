@@ -10,7 +10,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  // ✅ Use CRA env variable (must be defined in .env as REACT_APP_BACKEND_URL)
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -22,7 +23,7 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include", // ✅ crucial for cookies
+        credentials: "include", // ✅ needed for cookies
       });
 
       const data = await res.json();
