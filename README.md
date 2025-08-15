@@ -104,3 +104,37 @@ gdrive-frontend
 └─ tailwind.config.js
 
 ```
+```
+gdrive-frontend
+├─ package.json
+├─ postcss.config.js
+├─ public
+│  ├─ favicon.ico
+│  ├─ index.html
+│  ├─ logo192.png
+│  ├─ manifest.json
+│  └─ robots.txt
+├─ README.md
+├─ src
+│  ├─ App.css
+│  ├─ App.js
+│  ├─ App.test.js
+│  ├─ assets
+│  │  ├─ hero-combined.jpg
+│  │  ├─ hero-video.mp4
+│  │  ├─ logo.png
+│  │  └─ sample.png
+│  ├─ components
+│  │  ├─ FileExplorer.jsx
+│  │  ├─ LandingPage.jsx
+│  │  ├─ LoginPage.jsx
+│  │  └─ SignupPage.jsx
+│  ├─ index.css
+│  ├─ index.js
+│  ├─ logo.svg
+│  ├─ reportWebVitals.js
+│  └─ setupTests.js
+├─ static.json
+└─ tailwind.config.js
+
+```
