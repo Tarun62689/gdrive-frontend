@@ -10,27 +10,26 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const res = await fetch(
-        "https://gdrive-backend-elin.onrender.com/auth/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-          credentials: "include", // ✅ important for cookie-based auth
-        }
-      );
+      const res = await fetch(`${BACKEND_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        credentials: "include", // ✅ crucial for cookies
+      });
 
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // ✅ Navigate to FileExplorer
+      // ✅ Navigate after successful login
       navigate("/FileExplorer");
     } catch (err) {
       setError(err.message);
