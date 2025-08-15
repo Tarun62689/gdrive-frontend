@@ -1,4 +1,3 @@
-// src/components/FileExplorer.jsx
 import { useEffect, useState } from "react";
 import { FolderIcon, DocumentIcon } from "@heroicons/react/24/outline";
 import { FaRegFilePdf, FaRegFileImage } from "react-icons/fa";
@@ -9,7 +8,7 @@ export default function FileExplorer() {
   const [allFiles, setAllFiles] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL; // ✅ CRA-compatible
 
   const getUserInitials = () => "U"; 
 
@@ -86,7 +85,6 @@ export default function FileExplorer() {
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
-      {/* Sidebar */}
       <aside className="w-64 bg-white shadow-lg flex flex-col">
         <div className="p-4 flex items-center gap-3 border-b">
           <img src="/logo192.png" alt="Logo" className="h-9" />
@@ -116,9 +114,7 @@ export default function FileExplorer() {
         </div>
       </aside>
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        {/* Top Bar */}
         <header className="flex items-center px-8 py-4 bg-white shadow-sm justify-between relative">
           <input
             type="text"
@@ -152,7 +148,6 @@ export default function FileExplorer() {
           </div>
         </header>
 
-        {/* Quick Access */}
         <section className="px-8 py-6">
           <h2 className="text-lg font-semibold mb-3">Quick Access</h2>
           <div className="grid grid-cols-4 gap-5">
@@ -170,7 +165,6 @@ export default function FileExplorer() {
           </div>
         </section>
 
-        {/* All Files */}
         <section className="px-8 py-6">
           <h2 className="text-lg font-semibold mb-3">All Files</h2>
           <div className="grid grid-cols-5 gap-5">
