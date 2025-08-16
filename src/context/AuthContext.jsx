@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // stores logged in user
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -11,10 +11,20 @@ export function AuthProvider({ children }) {
   // 🔹 On first load, check if user is still logged in
   useEffect(() => {
     const fetchUser = async () => {
+      const token = localStorage.getItem("token"); // ✅ Get token from localStorage
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await fetch(`${BACKEND_URL}/api/auth/me`, {
-          credentials: "include", // send cookies
+          headers: {
+            Authorization: `Bearer ${token}`, // ✅ Send token in header
+          },
         });
+
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
@@ -22,6 +32,7 @@ export function AuthProvider({ children }) {
         } else {
           setUser(null);
           localStorage.removeItem("user");
+          localStorage.removeItem("token");
         }
       } catch (err) {
         console.error("Auth check failed:", err);
@@ -40,7 +51,6 @@ export function AuthProvider({ children }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
-      credentials: "include",
     });
 
     if (!res.ok) {
@@ -48,19 +58,29 @@ export function AuthProvider({ children }) {
     }
 
     const data = await res.json();
-    setUser(data.user);
+
+    // ✅ Save token + user
+    localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
+
+    setUser(data.user);
     return data;
   };
 
   // 🔹 Logout
   const logout = async () => {
+    const token = localStorage.getItem("token");
+
     await fetch(`${BACKEND_URL}/api/auth/logout`, {
       method: "POST",
-      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${token}`, // ✅ Send token on logout too
+      },
     });
+
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   return (
