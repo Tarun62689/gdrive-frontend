@@ -13,7 +13,8 @@ export default function FileExplorer() {
         const data = await getUserData();
         setFiles(data.files || []);
       } catch (err) {
-        setError("Session expired. Please log in again.");
+        console.error(err);
+        setError("Session expired or failed to fetch files. Please log in again.");
         navigate("/login");
       }
     };
@@ -21,8 +22,18 @@ export default function FileExplorer() {
   }, [navigate]);
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/login");
+    try {
+      await logout();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      navigate("/login");
+    }
+  };
+
+  const getFileName = (file) => {
+    // fallback to last part of path if name is null
+    return file.name || file.path.split("/").pop();
   };
 
   return (
@@ -37,7 +48,7 @@ export default function FileExplorer() {
         </button>
       </div>
 
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-red-500 mb-4">{error}</p>}
 
       <ul className="bg-white shadow rounded-lg p-4">
         {files.length === 0 ? (
@@ -45,7 +56,31 @@ export default function FileExplorer() {
         ) : (
           files.map((file) => (
             <li key={file.id} className="border-b py-2">
-              {file.name}
+              <strong>{getFileName(file)}</strong> <br />
+              <span className="text-sm text-gray-500">
+                Type: {file.mime_type} | Size: {(file.size / 1024).toFixed(2)} KB
+              </span>
+              {file.mime_type.startsWith("image/") && (
+                <div className="mt-2">
+                  <img
+                    src={`${process.env.REACT_APP_BACKEND_URL}/${file.path}`}
+                    alt={getFileName(file)}
+                    className="w-48 rounded"
+                  />
+                </div>
+              )}
+              {file.mime_type === "application/pdf" && (
+                <div className="mt-2">
+                  <a
+                    href={`${process.env.REACT_APP_BACKEND_URL}/${file.path}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline"
+                  >
+                    View PDF
+                  </a>
+                </div>
+              )}
             </li>
           ))
         )}
