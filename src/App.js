@@ -4,7 +4,7 @@ import LandingPage from "./components/LandingPage.jsx";
 import LoginPage from "./components/LoginPage.jsx";
 import SignupPage from "./components/SignupPage.jsx";
 import FileExplorer from "./components/FileExplorer.jsx";
-import { AuthProvider } from "./context/AuthContext.jsx"; 
+import { AuthProvider } from "./context/AuthProvider.jsx";
 
 function App() {
   return (

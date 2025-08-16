@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-  // 🔹 On first load, check if user is still logged in
+  // 🔹 Fetch current user on app load
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
@@ -19,7 +19,8 @@ export function AuthProvider({ children }) {
       }
 
       try {
-        const res = await fetch(`${BACKEND_URL}/api/auth/me`, {
+        const res = await fetch(`${BACKEND_URL}/api/user/data`, {
+          method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -27,13 +28,14 @@ export function AuthProvider({ children }) {
           const data = await res.json();
           setUser(data.user);
         } else {
-          setUser(null);
+          // Token invalid, remove it
           localStorage.removeItem("token");
+          setUser(null);
         }
       } catch (err) {
-        console.error("Auth check failed:", err);
-        setUser(null);
+        console.error("Fetch user failed:", err);
         localStorage.removeItem("token");
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -44,34 +46,33 @@ export function AuthProvider({ children }) {
 
   // 🔹 Login
   const login = async (email, password) => {
-    const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!res.ok) throw new Error("Login failed");
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Login failed");
+      }
 
-    const data = await res.json();
+      const data = await res.json();
+      // Save token in localStorage
+      localStorage.setItem("token", data.token);
+      setUser(data.user);
 
-    // ✅ Save token + user
-    localStorage.setItem("token", data.token);
-    setUser(data.user);
-
-    return data;
+      return data;
+    } catch (err) {
+      throw err;
+    }
   };
 
   // 🔹 Logout
-  const logout = async () => {
-    const token = localStorage.getItem("token");
-
-    await fetch(`${BACKEND_URL}/api/auth/logout`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    setUser(null);
+  const logout = () => {
     localStorage.removeItem("token");
+    setUser(null);
   };
 
   return (
