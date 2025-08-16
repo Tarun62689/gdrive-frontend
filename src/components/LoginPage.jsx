@@ -31,7 +31,7 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      navigate("/files"); // ✅ redirect to FileExplorer
+      navigate("/FileExplorer"); // ✅ redirect to FileExplorer
     } catch (err) {
       setError(err.message);
     } finally {
