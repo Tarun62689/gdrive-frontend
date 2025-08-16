@@ -15,7 +15,7 @@ export default function SignupPage() {
     setError("");
 
     try {
-      const res = await fetch("https://gdrive-backend-elin.onrender.com/auth/signup", {
+      const res = await fetch("https://gdrive-backend-elin.onrender.com/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,4 +1,3 @@
-// src/components/LoginPage.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
@@ -10,13 +9,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ✅ Use CRA environment variable
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
   if (!BACKEND_URL) {
-    console.error(
-      "REACT_APP_BACKEND_URL is not defined! Add it to your .env file."
-    );
+    console.error("❌ REACT_APP_BACKEND_URL is missing in .env file.");
   }
 
   const handleLogin = async (e) => {
@@ -25,18 +21,17 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await fetch(`${BACKEND_URL}/auth/login`, {
+      const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include", // ✅ important for cookies
+        credentials: "include", // ✅ keeps cookies
       });
 
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      navigate("/FileExplorer"); // ✅ go to file explorer on success
+      navigate("/files"); // ✅ redirect to FileExplorer
     } catch (err) {
       setError(err.message);
     } finally {

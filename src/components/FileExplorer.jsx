@@ -8,7 +8,7 @@ export default function FileExplorer() {
   const [allFiles, setAllFiles] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL; // ✅ CRA-compatible
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
   const getUserInitials = () => "U"; 
 
@@ -16,7 +16,7 @@ export default function FileExplorer() {
     const fetchFiles = async () => {
       try {
         const res = await fetch(`${BACKEND_URL}/api/user/data`, {
-          credentials: "include",
+          credentials: "include", // ✅ ensures cookies are sent
         });
 
         if (res.status === 401) {
@@ -54,7 +54,7 @@ export default function FileExplorer() {
   }, []);
 
   const handleLogout = async () => {
-    await fetch(`${BACKEND_URL}/auth/logout`, {
+    await fetch(`${BACKEND_URL}/api/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
@@ -94,9 +94,6 @@ export default function FileExplorer() {
           <nav className="flex flex-col gap-1">
             <button className="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 font-semibold">
               <FolderIcon className="h-5 w-5" /> My Drive
-            </button>
-            <button className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100">
-              Computers
             </button>
             <button className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100">
               Shared with me
