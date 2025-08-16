@@ -1,28 +1,40 @@
 const API_BASE = "https://gdrive-backend-elin.onrender.com/api";
 
-// Generic helper
+// Helper to include token automatically
 const request = async (endpoint, method = "GET", body) => {
+  const token = localStorage.getItem("token");
+
   const res = await fetch(`${API_BASE}${endpoint}`, {
     method,
-    headers: body ? { "Content-Type": "application/json" } : undefined,
+    headers: {
+      ...(body ? { "Content-Type": "application/json" } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: body ? JSON.stringify(body) : undefined,
-    credentials: "include", // 🔑 keep session cookies
   });
+
   if (!res.ok) {
     const errText = await res.text();
     throw new Error(errText || "Request failed");
   }
+
   return res.json();
 };
 
-// Specific API functions
-export const login = (email, password) =>
-  request("/auth/login", "POST", { email, password });
+// API calls
+export const login = async (email, password) => {
+  const data = await request("/auth/login", "POST", { email, password });
+  if (data.token) localStorage.setItem("token", data.token); // 🔑 Save JWT
+  return data;
+};
 
 export const signup = (name, email, password) =>
   request("/auth/signup", "POST", { name, email, password });
 
-export const logout = () => request("/auth/logout", "POST");
+export const logout = () => {
+  localStorage.removeItem("token"); // 🔑 Clear token
+  return request("/auth/logout", "POST");
+};
 
 export const getUserData = () => request("/user/data");
 
