@@ -11,9 +11,16 @@ export function AuthProvider({ children }) {
   // 🔹 On first load, check if user is still logged in
   useEffect(() => {
     const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await fetch(`${BACKEND_URL}/api/auth/me`, {
-          credentials: "include", // ✅ Send cookies automatically
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (res.ok) {
@@ -21,10 +28,12 @@ export function AuthProvider({ children }) {
           setUser(data.user);
         } else {
           setUser(null);
+          localStorage.removeItem("token");
         }
       } catch (err) {
         console.error("Auth check failed:", err);
         setUser(null);
+        localStorage.removeItem("token");
       } finally {
         setLoading(false);
       }
@@ -39,24 +48,30 @@ export function AuthProvider({ children }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
-      credentials: "include", // ✅ Save HTTP-only cookie
     });
 
     if (!res.ok) throw new Error("Login failed");
 
     const data = await res.json();
+
+    // ✅ Save token + user
+    localStorage.setItem("token", data.token);
     setUser(data.user);
+
     return data;
   };
 
   // 🔹 Logout
   const logout = async () => {
+    const token = localStorage.getItem("token");
+
     await fetch(`${BACKEND_URL}/api/auth/logout`, {
       method: "POST",
-      credentials: "include", // ✅ Clear cookie on server
+      headers: { Authorization: `Bearer ${token}` },
     });
 
     setUser(null);
+    localStorage.removeItem("token");
   };
 
   return (
