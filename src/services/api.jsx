@@ -40,8 +40,8 @@ export const login = async (email, password) => {
   return data;
 };
 
-export const signup = async (name, email, password) => {
-  const data = await request("/auth/signup", "POST", { name, email, password });
+export const signup = async (email, password) => {
+  const data = await request("/auth/signup", "POST", { email, password });
 
   if (data.token) {
     setToken(data.token); // ✅ store token in localStorage

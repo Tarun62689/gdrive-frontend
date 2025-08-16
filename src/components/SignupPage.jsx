@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { signup } from "../services/api.jsx";
 
 export default function SignupPage() {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -13,7 +12,7 @@ export default function SignupPage() {
     e.preventDefault();
     setError("");
     try {
-      await signup(name, email, password);
+      await signup(email, password);
       navigate("/login");
     } catch (err) {
       setError(err.message);
@@ -28,15 +27,6 @@ export default function SignupPage() {
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-
-        <input
-          type="text"
-          placeholder="Full Name"
-          className="w-full mb-4 p-3 border rounded-lg"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
 
         <input
           type="email"
