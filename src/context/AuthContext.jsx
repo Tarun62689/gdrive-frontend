@@ -11,28 +11,16 @@ export function AuthProvider({ children }) {
   // 🔹 On first load, check if user is still logged in
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("token"); // ✅ Get token from localStorage
-      if (!token) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-
       try {
         const res = await fetch(`${BACKEND_URL}/api/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // ✅ Send token in header
-          },
+          credentials: "include", // ✅ Send cookies automatically
         });
 
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
-          localStorage.setItem("user", JSON.stringify(data.user));
         } else {
           setUser(null);
-          localStorage.removeItem("user");
-          localStorage.removeItem("token");
         }
       } catch (err) {
         console.error("Auth check failed:", err);
@@ -51,36 +39,24 @@ export function AuthProvider({ children }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      credentials: "include", // ✅ Save HTTP-only cookie
     });
 
-    if (!res.ok) {
-      throw new Error("Login failed");
-    }
+    if (!res.ok) throw new Error("Login failed");
 
     const data = await res.json();
-
-    // ✅ Save token + user
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-
     setUser(data.user);
     return data;
   };
 
   // 🔹 Logout
   const logout = async () => {
-    const token = localStorage.getItem("token");
-
     await fetch(`${BACKEND_URL}/api/auth/logout`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`, // ✅ Send token on logout too
-      },
+      credentials: "include", // ✅ Clear cookie on server
     });
 
     setUser(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
   };
 
   return (
