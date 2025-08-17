@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { getUserData, logout } from "../services/api.jsx";
 import PreviewModal from "./PreviewModal";
 
+// Default icons for PDF and generic file
+const PDF_ICON = "https://cdn-icons-png.flaticon.com/512/337/337946.png";
+const FILE_ICON = "https://cdn-icons-png.flaticon.com/512/109/109612.png";
+
 export default function FileExplorer() {
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
@@ -37,17 +41,23 @@ export default function FileExplorer() {
         />
       );
     }
+
     if (file.type === "pdf") {
       return (
-        <div className="flex items-center justify-center w-full h-32 bg-red-100 rounded-t text-red-600 font-bold text-xl">
-          PDF
-        </div>
+        <img
+          src={PDF_ICON}
+          alt="PDF Icon"
+          className="w-full h-32 object-contain rounded-t bg-red-50 p-4"
+        />
       );
     }
+
     return (
-      <div className="flex items-center justify-center w-full h-32 bg-gray-200 rounded-t text-gray-600 font-bold text-xl">
-        FILE
-      </div>
+      <img
+        src={FILE_ICON}
+        alt="File Icon"
+        className="w-full h-32 object-contain rounded-t bg-gray-50 p-4"
+      />
     );
   };
 
@@ -78,9 +88,7 @@ export default function FileExplorer() {
               {renderFileIcon(file)}
               <div className="p-3">
                 <p className="font-medium truncate">{file.name}</p>
-                <p className="text-sm text-gray-500">
-                  {(file.size / 1024).toFixed(2)} KB
-                </p>
+                <p className="text-sm text-gray-500">{(file.size / 1024).toFixed(2)} KB</p>
               </div>
             </div>
           ))}
@@ -88,10 +96,7 @@ export default function FileExplorer() {
       )}
 
       {selectedFile && (
-        <PreviewModal
-          file={selectedFile}
-          onClose={() => setSelectedFile(null)}
-        />
+        <PreviewModal file={selectedFile} onClose={() => setSelectedFile(null)} />
       )}
     </div>
   );
