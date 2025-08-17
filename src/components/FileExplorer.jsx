@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserData, logout } from "../services/api.jsx";
-import { Document, Page } from "react-pdf";
-import "pdfjs-dist/web/pdf_viewer.css"; // ✅ correct stylesheet
 
 export default function FileExplorer() {
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
-  const [selectedPdf, setSelectedPdf] = useState(null);
-  const [numPages, setNumPages] = useState(null);
-  const [scale, setScale] = useState(1.2); // ✅ zoom state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -87,69 +82,18 @@ export default function FileExplorer() {
                   {(file.size / 1024).toFixed(2)} KB
                 </p>
                 {file.mime_type === "application/pdf" && (
-                  <button
-                    onClick={() =>
-                      setSelectedPdf(
-                        `${process.env.REACT_APP_BACKEND_URL}/${file.path}`
-                      )
-                    }
+                  <a
+                    href={`${process.env.REACT_APP_BACKEND_URL}/${file.path}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-blue-600 text-sm underline mt-1 block"
                   >
                     View PDF
-                  </button>
+                  </a>
                 )}
               </div>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* PDF PREVIEW SECTION */}
-      {selectedPdf && (
-        <div className="mt-8 bg-white shadow p-4 rounded-lg">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-lg font-semibold">PDF Preview</h2>
-            <button
-              onClick={() => setSelectedPdf(null)}
-              className="text-red-500 hover:underline"
-            >
-              Close
-            </button>
-          </div>
-
-          {/* Zoom controls */}
-          <div className="flex items-center gap-3 mb-3">
-            <button
-              onClick={() => setScale((s) => Math.max(0.5, s - 0.2))}
-              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-            >
-              -
-            </button>
-            <span className="text-sm">{Math.round(scale * 100)}%</span>
-            <button
-              onClick={() => setScale((s) => Math.min(3, s + 0.2))}
-              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-            >
-              +
-            </button>
-          </div>
-
-          {/* Scrollable PDF viewer */}
-          <div className="max-h-[70vh] overflow-y-auto border rounded p-2">
-            <Document
-              file={selectedPdf}
-              onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-            >
-              {Array.from(new Array(numPages), (_, index) => (
-                <Page
-                  key={`page_${index + 1}`}
-                  pageNumber={index + 1}
-                  scale={scale}
-                  className="mb-4 flex justify-center"
-                />
-              ))}
-            </Document>
-          </div>
         </div>
       )}
     </div>
