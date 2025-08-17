@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserData, logout } from "../services/api.jsx";
+import PreviewModal from "./PreviewModal"; // 👈 separate component
 
 export default function FileExplorer() {
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,6 +67,7 @@ export default function FileExplorer() {
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
+      {/* FILE GRID */}
       {files.length === 0 ? (
         <p className="text-gray-500">No files found</p>
       ) : (
@@ -72,7 +75,8 @@ export default function FileExplorer() {
           {files.map((file) => (
             <div
               key={file.id}
-              className="bg-white shadow rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+              className="bg-white shadow rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => setSelectedFile(file)}
             >
               {renderFileIcon(file)}
 
@@ -81,20 +85,18 @@ export default function FileExplorer() {
                 <p className="text-sm text-gray-500">
                   {(file.size / 1024).toFixed(2)} KB
                 </p>
-                {file.mime_type === "application/pdf" && (
-                  <a
-                    href={`${process.env.REACT_APP_BACKEND_URL}/${file.path}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 text-sm underline mt-1 block"
-                  >
-                    View PDF
-                  </a>
-                )}
               </div>
             </div>
           ))}
         </div>
+      )}
+
+      {/* PREVIEW MODAL */}
+      {selectedFile && (
+        <PreviewModal
+          file={selectedFile}
+          onClose={() => setSelectedFile(null)}
+        />
       )}
     </div>
   );
