@@ -6,46 +6,40 @@ export default function PreviewModal({ file, onClose }) {
 
   const renderPreview = () => {
     if (!fileUrl) {
-      // No URL available
       return (
         <div className="flex flex-col items-center justify-center h-[80vh] text-gray-600">
           <p className="text-lg mb-4">No preview available</p>
-          <button
-            onClick={() => alert("File URL not available")}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Download {fileName}
-          </button>
-        </div>
-      );
-    }
-
-    if (file.type === "image") {
-      // Image preview
-      return <img src={fileUrl} alt={fileName} className="max-h-[80vh] max-w-full object-contain mx-auto" />;
-    }
-
-    if (file.type === "pdf") {
-      // PDF preview with iframe + download button
-      return (
-        <div className="flex flex-col items-center w-full">
-          <iframe
-            src={fileUrl}
-            title={fileName}
-            className="w-full h-[70vh] border rounded mb-4"
-          />
           <a
-            href={fileUrl}
+            href="#"
             download={fileName}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
-            Download PDF
+            Download {fileName}
           </a>
         </div>
       );
     }
 
-    // Other file types: no preview, just download
+    if (file.type === "image") {
+      return (
+        <img
+          src={fileUrl}
+          alt={fileName}
+          className="max-h-[80vh] max-w-full object-contain mx-auto"
+        />
+      );
+    }
+
+    if (file.type === "pdf") {
+      return (
+        <iframe
+          src={fileUrl}
+          title={fileName}
+          className="w-full h-[80vh] border rounded"
+        />
+      );
+    }
+
     return (
       <div className="flex flex-col items-center justify-center h-[80vh] text-gray-600">
         <p className="text-lg mb-4">No preview available</p>
@@ -70,7 +64,7 @@ export default function PreviewModal({ file, onClose }) {
           ✕
         </button>
         <h2 className="text-lg font-semibold mb-4 truncate">{fileName}</h2>
-        <div className="flex justify-center items-center w-full">{renderPreview()}</div>
+        <div className="flex justify-center items-center">{renderPreview()}</div>
       </div>
     </div>
   );
