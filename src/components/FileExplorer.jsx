@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserData, logout } from "../services/api.jsx";
-import PreviewModal from "./PreviewModal"; // 👈 separate component
+import PreviewModal from "./PreviewModal";
 
 export default function FileExplorer() {
   const [files, setFiles] = useState([]);
@@ -33,7 +33,7 @@ export default function FileExplorer() {
     if (file.mime_type.startsWith("image/")) {
       return (
         <img
-          src={`${process.env.REACT_APP_BACKEND_URL}/${file.path}`}
+          src={file.url} // ✅ Use Supabase public URL
           alt={getFileName(file)}
           className="w-full h-32 object-cover rounded-t"
         />
@@ -67,7 +67,6 @@ export default function FileExplorer() {
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      {/* FILE GRID */}
       {files.length === 0 ? (
         <p className="text-gray-500">No files found</p>
       ) : (
@@ -91,7 +90,6 @@ export default function FileExplorer() {
         </div>
       )}
 
-      {/* PREVIEW MODAL */}
       {selectedFile && (
         <PreviewModal
           file={selectedFile}
