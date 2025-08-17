@@ -27,10 +27,12 @@ export default function FileExplorer() {
     navigate("/login");
   };
 
-  const getFileName = (file) => file.name || file.path.split("/").pop();
+  const getFileName = (file) => file.name || file.path?.split("/").pop() || "Unnamed";
 
   const renderFileIcon = (file) => {
-    if (file.mime_type.startsWith("image/")) {
+    const mime = file.mime_type || ""; // ✅ Safely handle undefined/null
+
+    if (mime.startsWith("image/")) {
       return (
         <img
           src={file.url} // ✅ Use Supabase public URL
@@ -39,7 +41,7 @@ export default function FileExplorer() {
         />
       );
     }
-    if (file.mime_type === "application/pdf") {
+    if (mime === "application/pdf") {
       return (
         <div className="flex items-center justify-center w-full h-32 bg-red-100 rounded-t text-red-600 font-bold text-xl">
           PDF
