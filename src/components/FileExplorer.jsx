@@ -27,20 +27,24 @@ export default function FileExplorer() {
     navigate("/login");
   };
 
-  const getFileName = (file) => file.name || file.path?.split("/").pop() || "Unnamed";
+  // Safely get filename
+  const getFileName = (file) => file.name || file.path?.split("/").pop() || "Unknown";
 
+  // Safely render file icon
   const renderFileIcon = (file) => {
-    const mime = file.mime_type || ""; // ✅ Safely handle undefined/null
+    const mime = file.mime_type || "";
+    const url = file.url || "";
 
-    if (mime.startsWith("image/")) {
+    if (mime.startsWith("image/") && url) {
       return (
         <img
-          src={file.url} // ✅ Use Supabase public URL
+          src={url}
           alt={getFileName(file)}
           className="w-full h-32 object-cover rounded-t"
         />
       );
     }
+
     if (mime === "application/pdf") {
       return (
         <div className="flex items-center justify-center w-full h-32 bg-red-100 rounded-t text-red-600 font-bold text-xl">
@@ -48,6 +52,7 @@ export default function FileExplorer() {
         </div>
       );
     }
+
     return (
       <div className="flex items-center justify-center w-full h-32 bg-gray-200 rounded-t text-gray-600 font-bold text-xl">
         FILE
