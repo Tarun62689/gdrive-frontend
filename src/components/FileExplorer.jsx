@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserData, logout } from "../services/api.jsx";
+import { Document, Page } from "react-pdf";
+import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import "react-pdf/dist/esm/Page/TextLayer.css";
 
 export default function FileExplorer() {
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
+  const [selectedPdf, setSelectedPdf] = useState(null);
+  const [numPages, setNumPages] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -82,18 +87,44 @@ export default function FileExplorer() {
                   {(file.size / 1024).toFixed(2)} KB
                 </p>
                 {file.mime_type === "application/pdf" && (
-                  <a
-                    href={`${process.env.REACT_APP_BACKEND_URL}/${file.path}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() =>
+                      setSelectedPdf(
+                        `${process.env.REACT_APP_BACKEND_URL}/${file.path}`
+                      )
+                    }
                     className="text-blue-600 text-sm underline mt-1 block"
                   >
                     View PDF
-                  </a>
+                  </button>
                 )}
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* PDF PREVIEW SECTION */}
+      {selectedPdf && (
+        <div className="mt-8 bg-white shadow p-4 rounded-lg">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-lg font-semibold">PDF Preview</h2>
+            <button
+              onClick={() => setSelectedPdf(null)}
+              className="text-red-500 hover:underline"
+            >
+              Close
+            </button>
+          </div>
+
+          <Document
+            file={selectedPdf}
+            onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+          >
+            {Array.from(new Array(numPages), (el, index) => (
+              <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+            ))}
+          </Document>
         </div>
       )}
     </div>
