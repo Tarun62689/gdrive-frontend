@@ -20,27 +20,41 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100">
+    <div className="flex h-screen items-center justify-center bg-gray-50">
       <form
         onSubmit={handleLogin}
-        className="bg-white shadow-lg rounded-xl p-8 w-96"
+        className="bg-white shadow-lg rounded-2xl p-8 w-[420px]"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <img
+            src="https://www.svgrepo.com/show/303552/google-drive-logo.svg"
+            alt="Drive Logo"
+            className="h-10 w-10"
+          />
+        </div>
+
+        <h2 className="text-xl font-semibold text-center text-gray-800 mb-6">
+          Login to Your Account
+        </h2>
+
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
+        <label className="block text-sm text-gray-700 mb-1">Email</label>
         <input
           type="email"
-          placeholder="Email"
-          className="w-full mb-4 p-3 border rounded-lg"
+          placeholder="you@example.com"
+          className="w-full mb-4 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
 
+        <label className="block text-sm text-gray-700 mb-1">Password</label>
         <input
           type="password"
-          placeholder="Password"
-          className="w-full mb-4 p-3 border rounded-lg"
+          placeholder="********"
+          className="w-full mb-6 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -48,21 +62,21 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+          className="w-full bg-indigo-500 text-white py-3 rounded-full hover:bg-indigo-600 transition"
         >
           Login
         </button>
 
         {/* Sign Up Link */}
         <div className="mt-6 text-center">
-          <p className="text-gray-700 text-sm">
+          <p className="text-gray-600 text-sm">
             Don’t have an account?{" "}
             <button
               type="button"
               onClick={() => navigate("/signup")}
-              className="text-blue-600 font-semibold hover:underline"
+              className="text-indigo-500 font-medium hover:underline"
             >
-              Sign Up
+              Sign up
             </button>
           </p>
         </div>
