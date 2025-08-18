@@ -7,14 +7,25 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(""); // ✅ Success message
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     try {
       await signup(email, password);
-      navigate("/login");
+
+      // ✅ Show success alert instead of redirecting immediately
+      setSuccess(
+        "Signup successful! Please check your email inbox and confirm your account before logging in."
+      );
+
+      // Optionally, redirect after a delay
+      setTimeout(() => {
+        navigate("/login");
+      }, 4000);
     } catch (err) {
       setError(err.message);
     }
@@ -28,11 +39,7 @@ export default function SignupPage() {
       >
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <img
-            src={logo}
-            alt="Drive Logo"
-            className="h-10 w-10"
-          />
+          <img src={logo} alt="Drive Logo" className="h-10 w-10" />
         </div>
 
         <h2 className="text-xl font-semibold text-center text-gray-800 mb-6">
@@ -40,6 +47,9 @@ export default function SignupPage() {
         </h2>
 
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+        {success && (
+          <p className="text-green-600 text-sm mb-3 font-medium">{success}</p>
+        )}
 
         <label className="block text-sm text-gray-700 mb-1">Email</label>
         <input
