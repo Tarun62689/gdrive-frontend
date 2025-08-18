@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signup } from "../services/api.jsx";
 
-export default function SignUpForm({ onSwitch }) {
-  const [username, setUsername] = useState("");
+export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -13,7 +12,7 @@ export default function SignUpForm({ onSwitch }) {
     e.preventDefault();
     setError("");
     try {
-      await signup({ username, email, password });
+      await signup(email, password);
       navigate("/login");
     } catch (err) {
       setError(err.message);
@@ -21,74 +20,53 @@ export default function SignUpForm({ onSwitch }) {
   };
 
   return (
-    <form
-      onSubmit={handleSignup}
-      className="bg-white shadow-lg rounded-xl p-8 w-[320px]"
-    >
-      <h2 className="text-2xl font-bold text-gray-600 text-center mb-6">
-        Sign Up
-      </h2>
+    <div className="flex h-screen items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleSignup}
+        className="bg-white shadow-lg rounded-xl p-8 w-96"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
+        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
-      {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-
-      <div className="relative w-full mb-6">
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          className="w-full h-10 border border-gray-400 rounded px-2 outline-none peer"
-        />
-        <label className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-600 transition-all duration-300 peer-valid:top-0 peer-valid:text-xs peer-valid:bg-white peer-focus:top-0 peer-focus:text-xs peer-focus:bg-white">
-          Username
-        </label>
-      </div>
-
-      <div className="relative w-full mb-6">
         <input
           type="email"
+          placeholder="Email"
+          className="w-full mb-4 p-3 border rounded-lg"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full h-10 border border-gray-400 rounded px-2 outline-none peer"
         />
-        <label className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-600 transition-all duration-300 peer-valid:top-0 peer-valid:text-xs peer-valid:bg-white peer-focus:top-0 peer-focus:text-xs peer-focus:bg-white">
-          Email
-        </label>
-      </div>
 
-      <div className="relative w-full mb-6">
         <input
           type="password"
+          placeholder="Password"
+          className="w-full mb-4 p-3 border rounded-lg"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="w-full h-10 border border-gray-400 rounded px-2 outline-none peer"
         />
-        <label className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-600 transition-all duration-300 peer-valid:top-0 peer-valid:text-xs peer-valid:bg-white peer-focus:top-0 peer-focus:text-xs peer-focus:bg-white">
-          Password
-        </label>
-      </div>
 
-      <button
-        type="submit"
-        className="w-full h-10 bg-gradient-to-r from-blue-500 to-pink-500 text-white font-medium rounded shadow-md"
-      >
-        Sign Up
-      </button>
+        <button
+          type="submit"
+          className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
+        >
+          Sign Up
+        </button>
 
-      <div className="text-center mt-6 text-sm">
-        <p className="text-gray-700">
-          Already have an account?{" "}
-          <button
-            type="button"
-            onClick={onSwitch || (() => navigate("/login"))}
-            className="text-pink-600 font-semibold hover:underline"
-          >
-            Sign In
-          </button>
-        </p>
-      </div>
-    </form>
+        {/* Login Link */}
+        <div className="mt-6 text-center">
+          <p className="text-gray-700 text-sm">
+            Already have an account?{" "}
+            <button
+              type="button"
+              onClick={() => navigate("/login")}
+              className="text-blue-600 font-semibold hover:underline"
+            >
+              Login
+            </button>
+          </p>
+        </div>
+      </form>
+    </div>
   );
 }
