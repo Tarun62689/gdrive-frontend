@@ -5,7 +5,6 @@ import PreviewModal from "./PreviewModal";
 
 export default function FileExplorer() {
   const [files, setFiles] = useState([]);
-  const [folders, setFolders] = useState([]);
   const [error, setError] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
@@ -15,7 +14,6 @@ export default function FileExplorer() {
       try {
         const data = await getUserData();
         setFiles(data.files || []);
-        setFolders(data.folders || []);
       } catch (err) {
         setError("Session expired. Please log in again.");
         navigate("/login");
@@ -39,6 +37,7 @@ export default function FileExplorer() {
         />
       );
     }
+
     if (file.type === "pdf") {
       return (
         <div className="flex items-center justify-center w-full h-32 bg-red-100 rounded-t text-red-600 font-bold text-xl">
@@ -46,6 +45,7 @@ export default function FileExplorer() {
         </div>
       );
     }
+
     return (
       <div className="flex items-center justify-center w-full h-32 bg-gray-200 rounded-t text-gray-600 font-bold text-xl">
         FILE
@@ -89,9 +89,17 @@ export default function FileExplorer() {
         </div>
       )}
 
+      {/* Modal for file preview */}
       {selectedFile && (
         <PreviewModal
-          file={selectedFile}
+          file={{
+            ...selectedFile,
+            // Ensure PDF has a downloadable URL even if not signed
+            url:
+              selectedFile.type === "pdf" && !selectedFile.url
+                ? `https://ripiijqxhhbklktjifgl.supabase.co/storage/v1/object/public/${selectedFile.path}`
+                : selectedFile.url,
+          }}
           onClose={() => setSelectedFile(null)}
         />
       )}
