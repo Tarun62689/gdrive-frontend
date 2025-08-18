@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signup } from "../services/api.jsx";
+import logo from "../assets/logo.png";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -28,7 +29,7 @@ export default function SignupPage() {
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <img
-            src="https://www.svgrepo.com/show/303552/google-drive-logo.svg"
+            src={logo}
             alt="Drive Logo"
             className="h-10 w-10"
           />
