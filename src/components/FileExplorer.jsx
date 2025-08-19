@@ -10,16 +10,20 @@ export default function FileExplorer() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [viewMode, setViewMode] = useState("list"); // list | grid
   const [showNewMenu, setShowNewMenu] = useState(false); // dropdown toggle
+  const [loading, setLoading] = useState(true); // ✅ loading state
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchFiles = async () => {
       try {
+        setLoading(true); // start loading
         const data = await getUserData();
         setFiles(data.files || []);
       } catch (err) {
         setError("Session expired. Please log in again.");
         navigate("/login");
+      } finally {
+        setLoading(false); // stop loading
       }
     };
     fetchFiles();
@@ -83,6 +87,13 @@ export default function FileExplorer() {
 
       {/* Main content */}
       <main className="flex-1 p-6 overflow-y-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">
+            Welcome to Drive 🚀
+          </h1>
+        </div>
+
         {/* Top bar */}
         <div className="flex justify-between items-center mb-6">
           <input
@@ -113,8 +124,13 @@ export default function FileExplorer() {
 
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
-        {/* File display */}
-        {files.length === 0 ? (
+        {/* Loading spinner */}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-600"></div>
+            <p className="ml-4 text-gray-600 text-lg">Loading your files...</p>
+          </div>
+        ) : files.length === 0 ? (
           <p className="text-gray-500">No files found</p>
         ) : viewMode === "list" ? (
           // -------- LIST VIEW --------
