@@ -3,13 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { getUserData, logout } from "../services/api.jsx";
 import PreviewModal from "./PreviewModal.jsx";
 import FileUpload from "./FileUpload.jsx";
+import { MoreVertical } from "lucide-react"; // 3-dots icon
 
 export default function FileExplorer() {
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [viewMode, setViewMode] = useState("list"); // list | grid
-  const [showNewMenu, setShowNewMenu] = useState(false); // dropdown toggle
+  const [showNewMenu, setShowNewMenu] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // responsive sidebar
+  const [activeMenu, setActiveMenu] = useState(null); // track open file menu
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,8 +35,12 @@ export default function FileExplorer() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md p-4 flex flex-col relative">
+      {/* Sidebar (Responsive) */}
+      <aside
+        className={`fixed md:static z-20 top-0 left-0 h-full bg-white shadow-md p-4 flex flex-col transform transition-transform ${
+          sidebarOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0 md:w-64"
+        }`}
+      >
         {/* + New button */}
         <div className="relative mb-6">
           <button
@@ -43,7 +50,6 @@ export default function FileExplorer() {
             + New
           </button>
 
-          {/* Dropdown Menu */}
           {showNewMenu && (
             <div className="absolute mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
               <FileUpload
@@ -54,12 +60,6 @@ export default function FileExplorer() {
               <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
                 📁 Upload Folder (coming soon)
               </button>
-              <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                📝 New Document
-              </button>
-              <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                📊 New Spreadsheet
-              </button>
             </div>
           )}
         </div>
@@ -67,24 +67,22 @@ export default function FileExplorer() {
         <nav className="space-y-2 text-gray-700">
           <p className="font-medium text-gray-900">Home</p>
           <p>My Drive</p>
-          <p>Shared with me</p>
-          <p>Recent</p>
-          <p>Starred</p>
           <p>Trash</p>
         </nav>
-
-        <div className="mt-auto">
-          <p className="text-sm text-gray-500">3.12 GB of 2 TB used</p>
-          <button className="text-blue-600 text-sm hover:underline">
-            Get more storage
-          </button>
-        </div>
       </aside>
 
       {/* Main content */}
       <main className="flex-1 p-6 overflow-y-auto">
         {/* Top bar */}
         <div className="flex justify-between items-center mb-6">
+          {/* Sidebar toggle on mobile */}
+          <button
+            className="md:hidden px-3 py-2 border rounded-lg bg-white shadow-sm"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            ☰
+          </button>
+
           <input
             type="text"
             placeholder="Search in Drive"
@@ -92,7 +90,6 @@ export default function FileExplorer() {
           />
 
           <div className="flex items-center gap-3">
-            {/* Toggle Button */}
             <button
               onClick={() =>
                 setViewMode(viewMode === "list" ? "grid" : "list")
@@ -124,6 +121,7 @@ export default function FileExplorer() {
                 <th className="py-2 px-4">Name</th>
                 <th className="py-2 px-4">Size</th>
                 <th className="py-2 px-4">Last Modified</th>
+                <th className="py-2 px-4"></th>
               </tr>
             </thead>
             <tbody>
@@ -131,9 +129,11 @@ export default function FileExplorer() {
                 <tr
                   key={file.id}
                   className="border-b hover:bg-gray-50 cursor-pointer"
-                  onClick={() => setSelectedFile(file)}
                 >
-                  <td className="py-2 px-4 flex items-center gap-2">
+                  <td
+                    className="py-2 px-4 flex items-center gap-2"
+                    onClick={() => setSelectedFile(file)}
+                  >
                     {file.type === "pdf" ? (
                       <span className="text-red-500 font-bold">📄</span>
                     ) : file.type === "image" ? (
@@ -151,6 +151,33 @@ export default function FileExplorer() {
                       ? new Date(file.updated_at).toLocaleDateString()
                       : "-"}
                   </td>
+                  <td className="py-2 px-4 relative">
+                    <button
+                      onClick={() =>
+                        setActiveMenu(activeMenu === file.id ? null : file.id)
+                      }
+                      className="p-1 hover:bg-gray-200 rounded"
+                    >
+                      <MoreVertical size={18} />
+                    </button>
+
+                    {activeMenu === file.id && (
+                      <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-md z-20">
+                        <button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
+                          Open
+                        </button>
+                        <button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
+                          Download
+                        </button>
+                        <button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
+                          Rename
+                        </button>
+                        <button className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100">
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -161,10 +188,12 @@ export default function FileExplorer() {
             {files.map((file) => (
               <div
                 key={file.id}
-                className="bg-white shadow rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => setSelectedFile(file)}
+                className="bg-white shadow rounded-lg overflow-hidden hover:shadow-lg transition-shadow relative"
               >
-                <div className="flex items-center justify-center w-full h-32 bg-gray-200">
+                <div
+                  className="flex items-center justify-center w-full h-32 bg-gray-200 cursor-pointer"
+                  onClick={() => setSelectedFile(file)}
+                >
                   {file.type === "pdf" ? (
                     <span className="text-red-500 font-bold text-lg">📄</span>
                   ) : file.type === "image" ? (
@@ -173,11 +202,42 @@ export default function FileExplorer() {
                     <span className="text-gray-500 text-lg">📁</span>
                   )}
                 </div>
-                <div className="p-3">
-                  <p className="font-medium truncate">{file.name}</p>
-                  <p className="text-sm text-gray-500">
-                    {(file.size / 1024).toFixed(2)} KB
-                  </p>
+                <div className="p-3 flex justify-between items-center">
+                  <div>
+                    <p className="font-medium truncate">{file.name}</p>
+                    <p className="text-sm text-gray-500">
+                      {(file.size / 1024).toFixed(2)} KB
+                    </p>
+                  </div>
+
+                  {/* 3 Dots Menu */}
+                  <div className="relative">
+                    <button
+                      onClick={() =>
+                        setActiveMenu(activeMenu === file.id ? null : file.id)
+                      }
+                      className="p-1 hover:bg-gray-200 rounded"
+                    >
+                      <MoreVertical size={18} />
+                    </button>
+
+                    {activeMenu === file.id && (
+                      <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-md z-20">
+                        <button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
+                          Open
+                        </button>
+                        <button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
+                          Download
+                        </button>
+                        <button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
+                          Rename
+                        </button>
+                        <button className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100">
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -185,7 +245,7 @@ export default function FileExplorer() {
         )}
       </main>
 
-      {/* Modal for file preview */}
+      {/* File Preview Modal */}
       {selectedFile && (
         <PreviewModal
           file={{
