@@ -17,25 +17,31 @@ export default function FileUpload() {
     }
 
     const formData = new FormData();
-    formData.append("file", file); // 👈 'file' must match backend field name
+    formData.append("file", file); // 👈 same field name as backend
 
     try {
+      // get token from localStorage or cookies
+      const token = localStorage.getItem("token");  
+
       const res = await axios.post(
         "https://gdrive-backend-elin.onrender.com/api/files/upload",
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            // Authorization: `Bearer ${token}`, // if your API requires auth
+            Authorization: `Bearer ${token}`, // 👈 pass token here
           },
+          withCredentials: true, // if backend uses cookies too
         }
       );
 
       setMessage("File uploaded successfully ✅");
       console.log("Upload response:", res.data);
     } catch (error) {
-      console.error("Upload error:", error);
-      setMessage("File upload failed ❌");
+      console.error("Upload error:", error.response?.data || error.message);
+      setMessage(
+        error.response?.data?.error || "File upload failed ❌"
+      );
     }
   };
 

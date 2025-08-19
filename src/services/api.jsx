@@ -1,6 +1,6 @@
+// src/services/api.jsx
 const API_BASE = "https://gdrive-backend-elin.onrender.com/api";
 
-// Save token in localStorage
 const setToken = (token) => {
   localStorage.setItem("token", token);
 };
@@ -9,7 +9,6 @@ const getToken = () => {
   return localStorage.getItem("token");
 };
 
-// Generic helper
 const request = async (endpoint, method = "GET", body) => {
   const token = getToken();
 
@@ -29,24 +28,39 @@ const request = async (endpoint, method = "GET", body) => {
   return res.json();
 };
 
-// Specific API functions
-export const login = async (email, password) => {
-  const data = await request("/auth/login", "POST", { email, password });
+// ---- File Upload (multipart) ----
+export const uploadFile = async (file) => {
+  const token = getToken();
+  if (!token) throw new Error("No auth token found");
 
-  if (data.token) {
-    setToken(data.token); // ✅ store token in localStorage
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`${API_BASE}/files/upload`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`, // ✅ token only, no Content-Type
+    },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(errText || "File upload failed");
   }
 
+  return res.json();
+};
+
+export const login = async (email, password) => {
+  const data = await request("/auth/login", "POST", { email, password });
+  if (data.token) setToken(data.token);
   return data;
 };
 
 export const signup = async (email, password) => {
   const data = await request("/auth/signup", "POST", { email, password });
-
-  if (data.token) {
-    setToken(data.token); // ✅ store token in localStorage
-  }
-
+  if (data.token) setToken(data.token);
   return data;
 };
 
@@ -61,4 +75,5 @@ export default {
   signup,
   logout,
   getUserData,
+  uploadFile, 
 };
