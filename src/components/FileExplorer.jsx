@@ -9,7 +9,7 @@ export default function FileExplorer() {
   const [error, setError] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [viewMode, setViewMode] = useState("list"); // list | grid
-  const [showNewMenu, setShowNewMenu] = useState(false); // dropdown toggle
+  const [showNewMenu, setShowNewMenu] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,44 +33,39 @@ export default function FileExplorer() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md p-4 flex flex-col relative">
-        {/* + New button */}
-        <div className="relative mb-6">
-          <button
-            onClick={() => setShowNewMenu(!showNewMenu)}
-            className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 w-full text-left"
-          >
-            + New
-          </button>
+      <aside className="hidden md:flex w-64 bg-white shadow-lg flex-col p-5">
+        <button
+          onClick={() => setShowNewMenu(!showNewMenu)}
+          className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition mb-6"
+        >
+          + New
+        </button>
 
-          {/* Dropdown Menu */}
-          {showNewMenu && (
-            <div className="absolute mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
-              <FileUpload
-                onUploadSuccess={(newFile) =>
-                  setFiles((prev) => [...prev, newFile])
-                }
-              />
-              <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                📁 Upload Folder (coming soon)
-              </button>
-              <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                📝 New Document
-              </button>
-              <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                📊 New Spreadsheet
-              </button>
-            </div>
-          )}
-        </div>
+        {showNewMenu && (
+          <div className="bg-white border rounded-lg shadow-lg mb-6">
+            <FileUpload
+              onUploadSuccess={(newFile) =>
+                setFiles((prev) => [...prev, newFile])
+              }
+            />
+            <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
+              📁 Upload Folder (coming soon)
+            </button>
+            <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
+              📝 New Document
+            </button>
+            <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
+              📊 New Spreadsheet
+            </button>
+          </div>
+        )}
 
-        <nav className="space-y-2 text-gray-700">
-          <p className="font-medium text-gray-900">Home</p>
-          <p>My Drive</p>
-          <p>Shared with me</p>
-          <p>Recent</p>
-          <p>Starred</p>
-          <p>Trash</p>
+        <nav className="space-y-4 text-gray-700 font-medium">
+          <p className="cursor-pointer hover:text-blue-600">My Drive</p>
+          <p className="cursor-pointer hover:text-blue-600">Shared with me</p>
+          <p className="cursor-pointer hover:text-blue-600">Recent</p>
+          <p className="cursor-pointer hover:text-blue-600">Starred</p>
+          <p className="cursor-pointer hover:text-blue-600">Trash</p>
         </nav>
 
         <div className="mt-auto">
@@ -84,15 +79,14 @@ export default function FileExplorer() {
       {/* Main content */}
       <main className="flex-1 p-6 overflow-y-auto">
         {/* Top bar */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
           <input
             type="text"
             placeholder="Search in Drive"
-            className="w-1/2 border rounded-lg px-4 py-2"
+            className="w-full sm:w-1/2 border rounded-lg px-4 py-2 shadow-sm"
           />
 
           <div className="flex items-center gap-3">
-            {/* Toggle Button */}
             <button
               onClick={() =>
                 setViewMode(viewMode === "list" ? "grid" : "list")
@@ -101,10 +95,9 @@ export default function FileExplorer() {
             >
               {viewMode === "list" ? "🔲 Grid View" : "📋 List View"}
             </button>
-
             <button
               onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
             >
               Logout
             </button>
@@ -118,74 +111,62 @@ export default function FileExplorer() {
           <p className="text-gray-500">No files found</p>
         ) : viewMode === "list" ? (
           // -------- LIST VIEW --------
-          <table className="w-full border-collapse shadow-sm">
-            <thead>
-              <tr className="bg-gray-100 text-left text-sm text-gray-600">
-                <th className="py-2 px-4">Name</th>
-                <th className="py-2 px-4">Size</th>
-                <th className="py-2 px-4">Last Modified</th>
-              </tr>
-            </thead>
-            <tbody>
-              {files.map((file) => (
-                <tr
-                  key={file.id}
-                  className="border-b hover:bg-gray-50 cursor-pointer"
-                  onClick={() => setSelectedFile(file)}
-                >
-                  <td className="py-2 px-4 flex items-center gap-2">
-                    {file.type === "pdf" ? (
-                      <span className="text-red-500 font-bold">📄</span>
-                    ) : file.type === "image" ? (
-                      <span className="text-blue-500">🖼️</span>
-                    ) : (
-                      <span className="text-gray-500">📁</span>
-                    )}
-                    <span className="truncate">{file.name}</span>
-                  </td>
-                  <td className="py-2 px-4 text-sm text-gray-600">
-                    {(file.size / 1024).toFixed(2)} KB
-                  </td>
-                  <td className="py-2 px-4 text-sm text-gray-600">
-                    {file.updated_at
-                      ? new Date(file.updated_at).toLocaleDateString()
-                      : "-"}
-                  </td>
+          <div className="overflow-x-auto bg-white shadow rounded-lg">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="bg-gray-100 text-left text-gray-600">
+                  <th className="py-3 px-4">Name</th>
+                  <th className="py-3 px-4">Size</th>
+                  <th className="py-3 px-4">Last Modified</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {files.map((file) => (
+                  <tr
+                    key={file.id}
+                    className="border-b hover:bg-gray-50 cursor-pointer"
+                    onClick={() => setSelectedFile(file)}
+                  >
+                    <td className="py-3 px-4 flex items-center gap-2">
+                      {file.type === "pdf" ? "📄" : file.type === "image" ? "🖼️" : "📁"}
+                      <span className="truncate">{file.name}</span>
+                    </td>
+                    <td className="py-3 px-4 text-gray-600">
+                      {(file.size / 1024).toFixed(2)} KB
+                    </td>
+                    <td className="py-3 px-4 text-gray-600">
+                      {file.updated_at
+                        ? new Date(file.updated_at).toLocaleDateString()
+                        : "-"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           // -------- GRID VIEW --------
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-6">
             {files.map((file) => (
               <div
                 key={file.id}
-                className="bg-white shadow rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                className="bg-white shadow rounded-lg p-4 hover:shadow-md transition cursor-pointer"
                 onClick={() => setSelectedFile(file)}
               >
-                <div className="flex items-center justify-center w-full h-32 bg-gray-200">
-                  {file.type === "pdf" ? (
-                    <span className="text-red-500 font-bold text-lg">📄</span>
-                  ) : file.type === "image" ? (
-                    <span className="text-blue-500 text-lg">🖼️</span>
-                  ) : (
-                    <span className="text-gray-500 text-lg">📁</span>
-                  )}
+                <div className="flex items-center justify-center w-full h-24 bg-gray-100 rounded-lg">
+                  {file.type === "pdf" ? "📄" : file.type === "image" ? "🖼️" : "📁"}
                 </div>
-                <div className="p-3">
-                  <p className="font-medium truncate">{file.name}</p>
-                  <p className="text-sm text-gray-500">
-                    {(file.size / 1024).toFixed(2)} KB
-                  </p>
-                </div>
+                <p className="mt-2 font-medium truncate">{file.name}</p>
+                <p className="text-sm text-gray-500">
+                  {(file.size / 1024).toFixed(2)} KB
+                </p>
               </div>
             ))}
           </div>
         )}
       </main>
 
-      {/* Modal for file preview */}
+      {/* Preview Modal */}
       {selectedFile && (
         <PreviewModal
           file={{

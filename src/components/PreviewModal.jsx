@@ -6,13 +6,12 @@ export default function PreviewModal({ file, onClose }) {
 
   const renderPreview = () => {
     if (!fileUrl) {
-      // No URL available
       return (
-        <div className="flex flex-col items-center justify-center h-[80vh] text-gray-600">
+        <div className="flex flex-col items-center justify-center h-[60vh] text-gray-600">
           <p className="text-lg mb-4">No preview available</p>
           <button
             onClick={() => alert("File URL not available")}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
           >
             Download {fileName}
           </button>
@@ -21,23 +20,27 @@ export default function PreviewModal({ file, onClose }) {
     }
 
     if (file.type === "image") {
-      // Image preview
-      return <img src={fileUrl} alt={fileName} className="max-h-[80vh] max-w-full object-contain mx-auto" />;
+      return (
+        <img
+          src={fileUrl}
+          alt={fileName}
+          className="max-h-[70vh] w-auto object-contain mx-auto rounded-lg shadow"
+        />
+      );
     }
 
     if (file.type === "pdf") {
-      // PDF preview with iframe + download button
       return (
         <div className="flex flex-col items-center w-full">
           <iframe
             src={fileUrl}
             title={fileName}
-            className="w-full h-[70vh] border rounded mb-4"
+            className="w-full h-[60vh] border rounded-lg shadow mb-4"
           />
           <a
             href={fileUrl}
             download={fileName}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition"
           >
             Download PDF
           </a>
@@ -45,14 +48,13 @@ export default function PreviewModal({ file, onClose }) {
       );
     }
 
-    // Other file types: no preview, just download
     return (
-      <div className="flex flex-col items-center justify-center h-[80vh] text-gray-600">
+      <div className="flex flex-col items-center justify-center h-[60vh] text-gray-600">
         <p className="text-lg mb-4">No preview available</p>
         <a
           href={fileUrl}
           download={fileName}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition"
         >
           Download {fileName}
         </a>
@@ -61,16 +63,25 @@ export default function PreviewModal({ file, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <div className="bg-white p-4 rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-2/3 relative">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 px-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl p-6 relative flex flex-col">
+        {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-red-600 font-bold text-xl"
+          className="absolute top-4 right-4 text-gray-600 hover:text-red-600 text-2xl font-bold transition"
         >
           ✕
         </button>
-        <h2 className="text-lg font-semibold mb-4 truncate">{fileName}</h2>
-        <div className="flex justify-center items-center w-full">{renderPreview()}</div>
+
+        {/* Header */}
+        <h2 className="text-xl font-semibold mb-4 truncate pr-8 text-gray-800">
+          {fileName}
+        </h2>
+
+        {/* Preview Content */}
+        <div className="flex justify-center items-center w-full flex-1">
+          {renderPreview()}
+        </div>
       </div>
     </div>
   );
