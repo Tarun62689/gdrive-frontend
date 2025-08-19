@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserData, logout } from "../services/api.jsx";
-import PreviewModal from "./PreviewModal";
+import PreviewModal from "./PreviewModal.jsx";
+import FileUpload from "./FileUpload.jsx";
 
 export default function FileExplorer() {
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [viewMode, setViewMode] = useState("list"); // "list" or "grid"
+  const [viewMode, setViewMode] = useState("list"); // list | grid
+  const [showNewMenu, setShowNewMenu] = useState(false); // dropdown toggle
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,10 +33,37 @@ export default function FileExplorer() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md p-4 flex flex-col">
-        <button className="bg-blue-600 text-white py-2 px-4 rounded-lg mb-6 hover:bg-blue-700">
-          + New
-        </button>
+      <aside className="w-64 bg-white shadow-md p-4 flex flex-col relative">
+        {/* + New button */}
+        <div className="relative mb-6">
+          <button
+            onClick={() => setShowNewMenu(!showNewMenu)}
+            className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 w-full text-left"
+          >
+            + New
+          </button>
+
+          {/* Dropdown Menu */}
+          {showNewMenu && (
+            <div className="absolute mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
+              <FileUpload
+                onUploadSuccess={(newFile) =>
+                  setFiles((prev) => [...prev, newFile])
+                }
+              />
+              <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                📁 Upload Folder (coming soon)
+              </button>
+              <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                📝 New Document
+              </button>
+              <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                📊 New Spreadsheet
+              </button>
+            </div>
+          )}
+        </div>
+
         <nav className="space-y-2 text-gray-700">
           <p className="font-medium text-gray-900">Home</p>
           <p>My Drive</p>
@@ -43,6 +72,7 @@ export default function FileExplorer() {
           <p>Starred</p>
           <p>Trash</p>
         </nav>
+
         <div className="mt-auto">
           <p className="text-sm text-gray-500">3.12 GB of 2 TB used</p>
           <button className="text-blue-600 text-sm hover:underline">
